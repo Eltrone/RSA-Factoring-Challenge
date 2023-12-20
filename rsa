@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 
-import math
 import random
 import sys
 
 def gcd(a, b):
     """Calcule le plus grand commun diviseur de a et b."""
-    while b != 0:
+    while b:
         a, b = b, a % b
     return a
 
@@ -17,55 +16,37 @@ def pollard_rho(n):
     x = random.randint(2, n - 1)
     y = x
     c = random.randint(1, n - 1)
-    d = 1
-    while d == 1:
-        x = (x * x % n + c) % n
-        y = (y * y % n + c) % n
-        y = (y * y % n + c) % n
-        d = gcd(abs(x - y), n)
-        if d == n:
-            return pollard_rho(n)
-    return d
+    g = 1
+    while g == 1:
+        x = (x * x + c) % n
+        y = (y * y + c) % n
+        y = (y * y + c) % n
+        g = gcd(abs(x - y), n)
+    return g
 
 def factorize(n):
     """Factorise un nombre en utilisant l'algorithme de Pollard rho."""
     if n == 1:
         return []
-    if is_prime(n):
-        return [n]
+    if n % 2 == 0:
+        return [2] + factorize(n // 2)
     factor = pollard_rho(n)
-    other_factor = n // factor
-    if is_prime(other_factor):
-        return [factor, other_factor]
-    else:
-        return factorize(factor) + factorize(other_factor)
-
-def is_prime(n):
-    """Vérifie si un nombre est premier."""
-    if n <= 1:
-        return False
-    if n <= 3:
-        return True
-    if n % 2 == 0 or n % 3 == 0:
-        return False
-    i = 5
-    while i * i <= n:
-        if n % i == 0 or n % (i + 2) == 0:
-            return False
-        i += 6
-    return True
+    if factor == n:
+        return [n]
+    return factorize(factor) + factorize(n // factor)
 
 def process_rsa_file(filename):
     """Traite un fichier contenant un nombre RSA et affiche sa factorisation."""
     with open(filename, 'r') as file:
         number = int(file.read().strip())
         factors = factorize(number)
-        factors.sort()  # Tri des facteurs pour que le plus petit soit en dernier
-        p, q = factors[0], factors[1]
-        print(f"{number} = {q} * {p}")  # Inversion des facteurs
+        factors.sort()
+        p, q = factors[-2], factors[-1]  # Prend les deux plus grands facteurs
+        print(f"{number} = {p} * {q}")
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Usage: python rsa.py <file>")
     else:
         process_rsa_file(sys.argv[1])
+
