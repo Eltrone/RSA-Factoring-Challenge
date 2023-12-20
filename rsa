@@ -41,7 +41,7 @@ def process_rsa_file(filename):
         number = int(file.read().strip())
         factors = factorize(number)
         factors.sort()
-        p, q = factors[-2], factors[-1]  # Prend les deux plus grands facteurs
+        p, q = factors[-1], factors[-2]  # Inversion pour afficher le plus grand facteur en premier
         print(f"{number} = {p} * {q}")
 
 if __name__ == "__main__":
@@ -49,4 +49,3 @@ if __name__ == "__main__":
         print("Usage: python rsa.py <file>")
     else:
         process_rsa_file(sys.argv[1])
-
