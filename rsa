@@ -1,6 +1,47 @@
 #!/usr/bin/env python3
 
+import math
+import random
+import sys
+
+def gcd(a, b):
+    """Calcule le plus grand commun diviseur de a et b."""
+    while b != 0:
+        a, b = b, a % b
+    return a
+
+def pollard_rho(n):
+    """Implémentation optimisée de l'algorithme de Pollard rho pour la factorisation."""
+    if n % 2 == 0:
+        return 2
+    x = random.randint(2, n - 1)
+    y = x
+    c = random.randint(1, n - 1)
+    d = 1
+    while d == 1:
+        x = (x * x % n + c) % n
+        y = (y * y % n + c) % n
+        y = (y * y % n + c) % n
+        d = gcd(abs(x - y), n)
+        if d == n:
+            return pollard_rho(n)
+    return d
+
+def factorize(n):
+    """Factorise un nombre en utilisant l'algorithme de Pollard rho."""
+    if n == 1:
+        return []
+    if is_prime(n):
+        return [n]
+    factor = pollard_rho(n)
+    other_factor = n // factor
+    if is_prime(other_factor):
+        return [factor, other_factor]
+    else:
+        return factorize(factor) + factorize(other_factor)
+
 def is_prime(n):
+    """Vérifie si un nombre est premier."""
     if n <= 1:
         return False
     if n <= 3:
@@ -14,22 +55,17 @@ def is_prime(n):
         i += 6
     return True
 
-def rsa_factorize(number):
-    for i in range(2, int(number**0.5) + 1):
-        if number % i == 0 and is_prime(i) and is_prime(number // i):
-            return i, number // i
-    return number, 1
-
 def process_rsa_file(filename):
+    """Traite un fichier contenant un nombre RSA et affiche sa factorisation."""
     with open(filename, 'r') as file:
         number = int(file.read().strip())
-        p, q = rsa_factorize(number)
-        print(f"{number}={p}*{q}")
+        factors = factorize(number)
+        factors.sort()  # Tri des facteurs pour que le plus petit soit en dernier
+        p, q = factors[0], factors[1]
+        print(f"{number} = {q} * {p}")  # Inversion des facteurs
 
 if __name__ == "__main__":
-    import sys
     if len(sys.argv) != 2:
         print("Usage: python rsa.py <file>")
     else:
         process_rsa_file(sys.argv[1])
-
