@@ -29,17 +29,25 @@ def factorize(n):
         return n, 1
 
     factor = pollard_rho(n)
-    if factor == n:  # Si Pollard rho échoue à trouver un facteur
-        return n, 1  # Retourne n et 1 comme facteurs
+    if factor == n:
+        return n, 1
 
-    return factor, n // factor
+    other_factor = n // factor
+    return min(factor, other_factor), max(factor, other_factor)
 
 def process_file(filename):
+    numbers = []
     with open(filename, 'r') as file:
         for line in file:
             number = int(line.strip())
-            p, q = factorize(number)
-            print(f"{number}={p}*{q}")
+            numbers.append(number)
+
+    # Trier les nombres dans l'ordre décroissant
+    numbers.sort(reverse=True)
+
+    for number in numbers:
+        p, q = factorize(number)
+        print(f"{number}={p}*{q}")
 
 if __name__ == "__main__":
     import sys
@@ -47,4 +55,3 @@ if __name__ == "__main__":
         print("Usage: factors <file>")
     else:
         process_file(sys.argv[1])
-
