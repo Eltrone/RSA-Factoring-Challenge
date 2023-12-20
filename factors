@@ -31,11 +31,7 @@ def pollard_rho(n):
     return d
 
 def factorize(n):
-    # Traitement spécial pour 1718944270642558716715
-    if n == 1718944270642558716715:
-        return 343788854128511743343, 5
-
-    if n < 10**10:  # Seuil pour la factorisation simple
+    if n < 10**10:  # Seuil pour utiliser la factorisation simple
         p, q = simple_factorization(n)
         if p != 1:
             return p, q
@@ -60,3 +56,4 @@ if __name__ == "__main__":
         print("Usage: factors <file>")
     else:
         process_file(sys.argv[1])
+
