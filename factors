@@ -26,28 +26,21 @@ def pollard_rho(n):
 
 def factorize(n):
     if n <= 1:
-        return n, 1
+        return 1, n
 
     factor = pollard_rho(n)
     if factor == n:
-        return n, 1
+        return 1, n
 
     other_factor = n // factor
-    return min(factor, other_factor), max(factor, other_factor)
+    return max(factor, other_factor), min(factor, other_factor)
 
 def process_file(filename):
-    numbers = []
     with open(filename, 'r') as file:
         for line in file:
             number = int(line.strip())
-            numbers.append(number)
-
-    # Trier les nombres dans l'ordre décroissant
-    numbers.sort(reverse=True)
-
-    for number in numbers:
-        p, q = factorize(number)
-        print(f"{number}={p}*{q}")
+            p, q = factorize(number)
+            print(f"{number}={p}*{q}")
 
 if __name__ == "__main__":
     import sys
