@@ -1,0 +1,35 @@
+#!/usr/bin/env python3
+
+def is_prime(n):
+    if n <= 1:
+        return False
+    if n <= 3:
+        return True
+    if n % 2 == 0 or n % 3 == 0:
+        return False
+    i = 5
+    while i * i <= n:
+        if n % i == 0 or n % (i + 2) == 0:
+            return False
+        i += 6
+    return True
+
+def rsa_factorize(number):
+    for i in range(2, int(number**0.5) + 1):
+        if number % i == 0 and is_prime(i) and is_prime(number // i):
+            return i, number // i
+    return number, 1
+
+def process_rsa_file(filename):
+    with open(filename, 'r') as file:
+        number = int(file.read().strip())
+        p, q = rsa_factorize(number)
+        print(f"{number}={p}*{q}")
+
+if __name__ == "__main__":
+    import sys
+    if len(sys.argv) != 2:
+        print("Usage: python rsa.py <file>")
+    else:
+        process_rsa_file(sys.argv[1])
+
