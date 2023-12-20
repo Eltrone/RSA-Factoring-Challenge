@@ -7,6 +7,12 @@ def gcd(a, b):
         a, b = b, a % b
     return a
 
+def simple_factorization(n):
+    for i in range(2, int(math.sqrt(n)) + 1):
+        if n % i == 0:
+            return n // i, i
+    return 1, n
+
 def pollard_rho(n):
     if n % 2 == 0:
         return 2
@@ -25,8 +31,10 @@ def pollard_rho(n):
     return d
 
 def factorize(n):
-    if n <= 1:
-        return 1, n
+    if n < 10**10:  # Seuil pour utiliser la factorisation simple
+        p, q = simple_factorization(n)
+        if p != 1:
+            return p, q
 
     factor = pollard_rho(n)
     if factor == n:
